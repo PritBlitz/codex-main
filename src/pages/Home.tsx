@@ -1,56 +1,195 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { mockData } from "../data/mockData";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "../components/animations/ScrollReveal";
+import TiltCard from "../components/animations/TiltCard";
+
+const prefersReduced =
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Staggered character reveal
+function AnimatedHeading({ text, className }: { text: string; className?: string }) {
+  const chars = text.split("");
+  return (
+    <span className={className} aria-label={text}>
+      {prefersReduced ? text : chars.map((char, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.5, delay: 0.3 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: "inline-block", whiteSpace: char === " " ? "pre" : "normal" }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+// Typing effect hook
+function useTypingEffect(text: string, startDelay: number, speed: number = 30) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (prefersReduced) { setDisplayed(text); setDone(true); return; }
+    let i = 0;
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) { clearInterval(interval); setDone(true); }
+      }, speed);
+      return () => clearInterval(interval);
+    }, startDelay);
+    return () => clearTimeout(timer);
+  }, [text, startDelay, speed]);
+
+  return { displayed, done };
+}
+
+
+// Sonar pulse ring
+function SonarButton({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.button
+      className={`relative ${className ?? ""}`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
+    >
+      {children}
+      {!prefersReduced && (
+        <motion.span
+          className="absolute inset-0 pointer-events-none rounded-[inherit]"
+          style={{ border: "2px solid #00B4D8" }}
+          animate={{ scale: [1, 1.3], opacity: [0.6, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", repeatDelay: 0.5 }}
+        />
+      )}
+    </motion.button>
+  );
+}
+
+// Floating code fragment
+function FloatingCode({ text, x, y, duration, delay }: { text: string; x: string; y: string; duration: number; delay: number }) {
+  if (prefersReduced) return null;
+  return (
+    <motion.div
+      className="absolute font-mono text-xs font-bold bg-slate-900 text-white px-2 py-1 pointer-events-none"
+      style={{ left: x, top: y }}
+      animate={{ y: [0, -20, 5, -12, 0] }}
+      transition={{ duration, repeat: Infinity, delay, ease: "easeInOut", repeatType: "mirror" }}
+    >
+      {text}
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { hero, about, domains, updates } = mockData.home;
+  const subheadDelay = 0.3 + hero.title.length * 0.04 + 0.5 + 400;
+  const { displayed, done } = useTypingEffect(hero.description, subheadDelay);
+
+  const CHAR_COUNT = (hero.title + " " + hero.subtitle1 + " " + hero.subtitle2).length;
+  const ctaDelay = 0.3 + CHAR_COUNT * 0.04 + 0.8;
 
   return (
     <div>
-      {/* Hero Section */}
+      {/* ── HERO ────────────────────────────────────────────────── */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden border-b-4 border-slate-900 grid-pattern bg-background-light">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full py-20">
           <div className="relative z-10">
-            <div className="inline-block bg-primary text-white px-4 py-1 font-bold mb-6 text-sm uppercase tracking-widest">{hero.established}</div>
+            <motion.div
+              initial={prefersReduced ? {} : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="inline-block bg-primary text-white px-4 py-1 font-bold mb-6 text-sm uppercase tracking-widest"
+            >
+              {hero.established}
+            </motion.div>
+
             <h1 className="text-6xl md:text-8xl font-black leading-[0.9] text-slate-900 mb-6 font-display">
-              {hero.title} <br />
-              <span className="text-primary italic">{hero.subtitle1}</span> <br />
-              {hero.subtitle2}
+              <AnimatedHeading text={hero.title} />{" "}
+              <br />
+              <span className="text-primary italic">
+                <AnimatedHeading text={hero.subtitle1} />
+              </span>{" "}
+              <br />
+              <AnimatedHeading text={hero.subtitle2} />
             </h1>
-            <p className="text-xl md:text-2xl font-medium text-slate-800 mb-10 max-w-lg border-l-4 border-primary pl-6">
-              {hero.description}
+
+            {/* Typing subheading */}
+            <p className="text-xl md:text-2xl font-medium text-slate-800 mb-10 max-w-lg border-l-4 border-primary pl-6 min-h-[4rem]">
+              {displayed}
+              {!done && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity }}
+                  className="ml-0.5 inline-block w-0.5 h-5 bg-primary"
+                />
+              )}
             </p>
-            <div className="flex flex-wrap gap-4">
-              <button className="bg-slate-900 text-white px-8 py-4 text-lg font-black brutalist-shadow-hover border-2 border-slate-900 transition-all font-display tracking-widest">
+
+            <motion.div
+              className="flex flex-wrap gap-4"
+              initial={prefersReduced ? {} : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: ctaDelay / 1000 }}
+            >
+              <motion.button className="bg-slate-900 text-white px-8 py-4 text-lg font-black border-2 border-slate-900 font-display tracking-widest cursor-pointer">
                 {hero.exploreBtn}
-              </button>
-              <button className="bg-white text-slate-900 px-8 py-4 text-lg font-black brutalist-shadow-hover border-2 border-slate-900 transition-all font-display tracking-widest">
+              </motion.button>
+              <SonarButton className="bg-white text-slate-900 px-8 py-4 text-lg font-black border-2 border-slate-900 font-display tracking-widest cursor-pointer">
                 {hero.stackBtn}
-              </button>
-            </div>
+              </SonarButton>
+            </motion.div>
           </div>
-          <div className="relative h-[500px] w-full flex items-center justify-center">
-            <div className="absolute inset-0 bg-primary/10 border-4 border-slate-900 brutalist-shadow rotate-3"></div>
+
+          {/* Hero Visual */}
+          <motion.div
+            className="relative h-[500px] w-full flex items-center justify-center"
+            initial={prefersReduced ? {} : { opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-primary/10 border-4 border-slate-900 brutalist-shadow"
+              animate={{ rotate: [3, 4, 3] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            />
             <div className="absolute inset-0 bg-white border-4 border-slate-900 brutalist-shadow -rotate-2 flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 opacity-20 grid-pattern"></div>
-              {/* Cinematic 3D Placeholder Concept */}
+              <div className="absolute inset-0 opacity-20 grid-pattern" />
               <div className="relative z-10 text-center">
-                <span className="material-symbols-outlined text-[160px] text-primary leading-none">deployed_code</span>
+                <motion.span
+                  className="material-symbols-outlined text-[160px] text-primary leading-none"
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  deployed_code
+                </motion.span>
                 <div className="mt-4 font-mono text-slate-900 font-bold bg-background-light p-2 tracking-widest text-sm">
                   {hero.loadingText}
                 </div>
               </div>
-              {/* Floating Code Fragments */}
-              <div className="absolute top-10 left-10 bg-slate-900 text-white p-2 font-mono text-xs rotate-12">{hero.codeFrag1}</div>
-              <div className="absolute bottom-20 right-10 bg-primary text-white p-2 font-mono text-xs -rotate-6">{hero.codeFrag2}</div>
+
+              {/* Floating code fragments */}
+              <FloatingCode text={hero.codeFrag1} x="8%" y="10%" duration={7} delay={0} />
+              <FloatingCode text={hero.codeFrag2} x="55%" y="75%" duration={9} delay={1.5} />
+              <FloatingCode text="</>" x="70%" y="20%" duration={11} delay={0.8} />
+              <FloatingCode text="{}" x="20%" y="65%" duration={8} delay={2} />
+              <FloatingCode text="//" x="80%" y="55%" duration={10} delay={0.3} />
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* About Section */}
+      {/* ── ABOUT ───────────────────────────────────────────────── */}
       <section className="py-24 bg-white border-b-4 border-slate-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-5">
+            <ScrollReveal className="lg:col-span-5">
               <h2 className="text-5xl font-black text-slate-900 mb-8 uppercase font-display leading-[1.1]">
                 {about.titlePart1} <br />
                 {about.titlePart2} <span className="text-primary underline">{about.titleHighlight}</span>
@@ -59,107 +198,138 @@ export default function Home() {
                 <p>{about.desc1}</p>
                 <p>{about.desc2}</p>
               </div>
-            </div>
-            <div className="lg:col-span-7 grid grid-cols-2 gap-4">
+            </ScrollReveal>
+
+            <StaggerContainer className="lg:col-span-7 grid grid-cols-2 gap-4">
               {about.stats.map((stat, i) => (
-                <div
-                  key={i}
-                  className={`p-8 border-4 border-slate-900 brutalist-shadow ${stat.span === 2 ? 'bg-slate-900 text-white col-span-2' :
-                    i === 0 ? 'bg-background-light' : 'bg-primary text-white'
-                    }`}
-                >
-                  <div className={`text-5xl font-black mb-2 font-display ${i === 0 ? 'text-primary' : ''}`}>{stat.value}</div>
-                  <div className={`font-bold uppercase tracking-wide text-sm ${i === 0 ? 'text-slate-900' : ''}`}>{stat.label}</div>
-                </div>
+                <StaggerItem key={i} className={stat.span === 2 ? 'col-span-2' : ''}>
+                  <div
+                    className={`p-8 border-4 border-slate-900 brutalist-shadow h-full ${stat.span === 2
+                      ? 'bg-slate-900 text-white'
+                      : i === 0
+                        ? 'bg-background-light'
+                        : 'bg-primary text-white'
+                      }`}
+                  >
+                    <div className={`text-5xl font-black mb-2 font-display ${i === 0 ? 'text-primary' : ''}`}>
+                      {stat.value}
+                    </div>
+                    <div className={`font-bold uppercase tracking-wide text-sm ${i === 0 ? 'text-slate-900' : ''}`}>
+                      {stat.label}
+                    </div>
+                  </div>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
+
+
           </div>
         </div>
       </section>
 
-      {/* Domains Section */}
+      {/* ── DOMAINS ─────────────────────────────────────────────── */}
       <section className="py-24 bg-background-light border-b-4 border-slate-900">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-16">
-            <div>
-              <h2 className="text-5xl font-black text-slate-900 uppercase leading-none font-display">
-                What We <br /><span className="text-primary">Master</span>
-              </h2>
-            </div>
+          <ScrollReveal className="flex items-end justify-between mb-16">
+            <h2 className="text-5xl font-black text-slate-900 uppercase leading-none font-display">
+              What We <br /><span className="text-primary">Master</span>
+            </h2>
             <div className="hidden md:block text-right font-mono font-bold text-slate-900 opacity-60">
               // TECHNICAL SPECIALIZATIONS
             </div>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          </ScrollReveal>
+
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {domains.map((domain, i) => (
-              <div key={i} className="bg-white border-4 border-slate-900 p-8 hover:bg-primary hover:text-white transition-colors group cursor-pointer">
-                <span className="material-symbols-outlined text-5xl mb-6 text-primary group-hover:text-white transition-colors duration-300">
-                  {domain.icon}
-                </span>
-                <h3 className="text-2xl font-black mb-4 uppercase font-display">{domain.title}</h3>
-                <p className="font-medium opacity-80 text-sm leading-relaxed">{domain.desc}</p>
-              </div>
+              <StaggerItem key={i}>
+                <motion.div
+                  className="bg-white border-4 border-slate-900 p-8 cursor-pointer"
+                  whileHover={{ backgroundColor: "#0707f2", color: "#ffffff" }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <span className="material-symbols-outlined text-5xl mb-6 text-primary block" style={{ transition: "color 0.2s" }}>
+                    {domain.icon}
+                  </span>
+                  <h3 className="text-2xl font-black mb-4 uppercase font-display">{domain.title}</h3>
+                  <p className="font-medium opacity-80 text-sm leading-relaxed">{domain.desc}</p>
+                </motion.div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
-      {/* Latest Updates */}
+      {/* ── LATEST UPDATES ──────────────────────────────────────── */}
       <section className="py-24 bg-white overflow-hidden border-b-4 border-slate-900">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-5xl font-black text-slate-900 mb-16 text-center uppercase font-display">
-            Pulse of the <span className="bg-primary text-white px-4 inline-block transform -rotate-2">Club</span>
-          </h2>
-          <div className="grid md:grid-cols-3 gap-10">
+          <ScrollReveal>
+            <h2 className="text-5xl font-black text-slate-900 mb-16 text-center uppercase font-display">
+              Pulse of the <span className="bg-primary text-white px-4 inline-block transform -rotate-2">Club</span>
+            </h2>
+          </ScrollReveal>
+
+          <StaggerContainer className="grid md:grid-cols-3 gap-10">
             {updates.map((post, i) => (
-              <div key={i} className="group border-4 border-slate-900 brutalist-shadow-hover transition-all flex flex-col cursor-pointer bg-white">
-                <div className="h-64 bg-slate-200 overflow-hidden relative border-b-4 border-slate-900 shrink-0">
-                  <img
-                    alt={post.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105"
-                    src={post.image}
-                  />
-                  <div className={`absolute top-4 left-4 text-white px-3 py-1 font-bold text-sm tracking-wider uppercase ${post.type === 'BLOG' ? 'bg-primary' : 'bg-slate-900'}`}>
-                    {post.type}
+              <StaggerItem key={i}>
+                <TiltCard
+                  maxTilt={8}
+                  liftY={8}
+                  className="border-4 border-slate-900 brutalist-shadow flex flex-col cursor-pointer bg-white group h-full"
+                >
+                  <div className="h-64 bg-slate-200 overflow-hidden relative border-b-4 border-slate-900 shrink-0">
+                    <img
+                      alt={post.title}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105"
+                      src={post.image}
+                    />
+                    <div className={`absolute top-4 left-4 text-white px-3 py-1 font-bold text-sm tracking-wider uppercase ${post.type === 'BLOG' ? 'bg-primary' : 'bg-slate-900'}`}>
+                      {post.type}
+                    </div>
                   </div>
-                </div>
-                <div className="p-6 flex flex-col grow">
-                  <div className="text-sm font-bold text-primary mb-2 tracking-wide">{post.date}</div>
-                  <h4 className="text-2xl font-black mb-4 leading-tight group-hover:text-primary transition-colors font-display line-clamp-3">
-                    {post.title}
-                  </h4>
-                  <p className="text-slate-600 mb-6 font-medium text-sm leading-relaxed line-clamp-3">
-                    {post.desc}
-                  </p>
-                  <div className="mt-auto">
-                    <span className="inline-flex items-center gap-2 font-black uppercase text-sm border-b-2 border-slate-900 pb-1 group-hover:text-primary group-hover:border-primary transition-colors">
-                      {post.cta} <span className="material-symbols-outlined text-base">arrow_forward</span>
-                    </span>
+                  <div className="p-6 flex flex-col grow">
+                    <div className="text-sm font-bold text-primary mb-2 tracking-wide">{post.date}</div>
+                    <h4 className="text-2xl font-black mb-4 leading-tight group-hover:text-primary transition-colors font-display line-clamp-3">
+                      {post.title}
+                    </h4>
+                    <p className="text-slate-600 mb-6 font-medium text-sm leading-relaxed line-clamp-3">
+                      {post.desc}
+                    </p>
+                    <div className="mt-auto">
+                      <span className="inline-flex items-center gap-2 font-black uppercase text-sm border-b-2 border-slate-900 pb-1 group-hover:text-primary group-hover:border-primary transition-colors">
+                        {post.cta} <span className="material-symbols-outlined text-base">arrow_forward</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </TiltCard>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
-      {/* Join CTA */}
-      <section className="bg-primary py-24">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-6xl md:text-8xl font-black text-white mb-8 uppercase leading-none italic font-display">Are You Next?</h2>
-          <p className="text-2xl font-bold text-white/90 mb-12 max-w-2xl mx-auto">
-            Join the league of exceptional developers and help us build the next decade of engineering culture.
-          </p>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <button className="bg-white text-slate-900 px-12 py-6 text-xl md:text-2xl font-black brutalist-shadow-hover border-4 border-slate-900 transition-all w-full md:w-auto font-display tracking-widest uppercase">
-              APPLY FOR MEMBERSHIP
-            </button>
-            <button className="bg-slate-900 text-white px-12 py-6 text-xl md:text-2xl font-black brutalist-shadow-hover border-4 border-slate-900 transition-all w-full md:w-auto font-display tracking-widest uppercase">
-              PARTNER WITH US
-            </button>
+      {/* ── CTA ─────────────────────────────────────────────────── */}
+      <ScrollReveal>
+        <section className="bg-primary py-24">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <h2 className="text-6xl md:text-8xl font-black text-white mb-8 uppercase leading-none italic font-display">Are You Next?</h2>
+            <p className="text-2xl font-bold text-white/90 mb-12 max-w-2xl mx-auto">
+              Join the league of exceptional developers and help us build the next decade of engineering culture.
+            </p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              <SonarButton className="bg-white text-slate-900 px-12 py-6 text-xl md:text-2xl font-black border-4 border-slate-900 w-full md:w-auto font-display tracking-widest uppercase cursor-pointer">
+                APPLY FOR MEMBERSHIP
+              </SonarButton>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="bg-slate-900 text-white px-12 py-6 text-xl md:text-2xl font-black border-4 border-slate-900 w-full md:w-auto font-display tracking-widest uppercase cursor-pointer"
+              >
+                PARTNER WITH US
+              </motion.button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
     </div>
   );
 }

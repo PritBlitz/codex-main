@@ -1,23 +1,44 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { AnimatePresence } from "framer-motion"
 import Home from "./pages/Home"
 import Blogs from "./pages/Blogs"
 import Events from "./pages/Events"
 import Team from "./pages/Team"
 import Navbar from "./components/layout/Navbar"
 import Footer from "./components/layout/Footer"
+import TransitionOverlay from "./components/animations/TransitionOverlay"
+import PageTransition from "./components/animations/PageTransition"
+import CustomCursor from "./components/animations/CustomCursor"
+import AmbientBackground from "./components/animations/AmbientBackground"
+
+// Inner component so useLocation works inside Router
+function AnimatedRoutes() {
+  const location = useLocation()
+  return (
+    <>
+      <TransitionOverlay />
+      <AnimatePresence mode="wait" initial={false}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+          <Route path="/blogs" element={<PageTransition><Blogs /></PageTransition>} />
+          <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+          <Route path="/team" element={<PageTransition><Team /></PageTransition>} />
+        </Routes>
+      </AnimatePresence>
+    </>
+  )
+}
 
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      {/* Global ambient elements */}
+      <AmbientBackground />
+      <CustomCursor />
+      <div className="flex flex-col min-h-screen relative z-10">
         <Navbar />
         <main className="grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/team" element={<Team />} />
-          </Routes>
+          <AnimatedRoutes />
         </main>
         <Footer />
       </div>
