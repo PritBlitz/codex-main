@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden border-b-4 border-slate-900 grid-pattern">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden border-b-4 border-slate-900 grid-pattern bg-background-light">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full py-20">
           <div className="relative z-10">
             <div className="inline-block bg-primary text-white px-4 py-1 font-bold mb-6 text-sm uppercase tracking-widest">{hero.established}</div>
@@ -123,7 +123,7 @@ export default function Home() {
                     {post.type}
                   </div>
                 </div>
-                <div className="p-6 flex flex-col flex-grow">
+                <div className="p-6 flex flex-col grow">
                   <div className="text-sm font-bold text-primary mb-2 tracking-wide">{post.date}</div>
                   <h4 className="text-2xl font-black mb-4 leading-tight group-hover:text-primary transition-colors font-display line-clamp-3">
                     {post.title}

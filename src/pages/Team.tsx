@@ -40,7 +40,7 @@ export default function Team() {
           {members.map((member) => (
             <div 
               key={member.id} 
-              className="group relative bg-white border-4 border-slate-900 p-4 transition-all brutalist-shadow-hover hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_#0707f2] hover:outline hover:outline-3 hover:outline-primary hover:shadow-[0_0_20px_rgba(7,7,242,0.4)]"
+              className="group relative bg-white border-4 border-slate-900 p-4 transition-all brutalist-shadow-hover hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_#0707f2] hover:outline-3 hover:outline-primary"
             >
               <div className="aspect-square bg-slate-200 mb-6 overflow-hidden border-2 border-slate-900 relative">
                 <img 
