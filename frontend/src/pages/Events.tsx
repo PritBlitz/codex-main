@@ -98,13 +98,23 @@ function EventCard({ item, i }: { item: any, i: number }) {
             <p className="text-primary font-medium leading-snug mb-8 line-clamp-4">{item.desc}</p>
           </div>
           <div className="flex flex-wrap items-center gap-4 mt-auto">
-            <motion.button
-              whileHover={{ scale: 1.02, backgroundColor: "#00B4D8" }}
-              whileTap={{ scale: 0.97 }}
-              className="flex-1 bg-primary text-white py-4 px-6 font-black uppercase tracking-widest transition-colors cursor-pointer"
-            >
-              Register Now
-            </motion.button>
+            {item.status === 'Past' ? (
+              <div className="flex-1 bg-slate-200 text-slate-500 py-4 px-6 font-black uppercase tracking-widest border-2 border-slate-300 text-center cursor-not-allowed">
+                Registrations Closed
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.02, backgroundColor: "#00B4D8" }}
+                whileTap={{ scale: 0.97 }}
+                className="flex-1 bg-primary text-white py-4 px-6 font-black uppercase tracking-widest transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (item.link) window.open(item.link, '_blank');
+                }}
+              >
+                Register Now
+              </motion.button>
+            )}
             <motion.button
               whileHover={{ backgroundColor: "#03045E", color: "#ffffff" }}
               whileTap={{ scale: 0.97 }}
@@ -133,13 +143,24 @@ export default function Events() {
   const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const [dynamicEvents, setDynamicEvents] = useState<any[]>(items);
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeStatus, setActiveStatus] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('All');
 
-  const filters = ['All', 'Workshops', 'Competetions', 'Seminars'];
+  const statusFilters = ['All', 'Upcoming', 'Ongoing', 'Past'];
+  const categoryFilters = ['All', 'Workshops', 'Competitions', 'Seminars'];
 
-  const filteredEvents = activeFilter === 'All'
-    ? dynamicEvents
-    : dynamicEvents.filter(e => e.category === activeFilter);
+  const filteredEvents = dynamicEvents.filter(e => {
+    const matchStatus = activeStatus === 'All' || e.status === activeStatus;
+    const matchCategory = activeCategory === 'All' || e.category === activeCategory;
+    return matchStatus && matchCategory;
+  }).sort((a, b) => {
+    const priority: Record<string, number> = { 'Ongoing': 1, 'Upcoming': 2, 'Past': 3 };
+    const pA = priority[a.status] || 99;
+    const pB = priority[b.status] || 99;
+    
+    if (pA !== pB) return pA - pB;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -148,6 +169,7 @@ export default function Events() {
           _id,
           title,
           category,
+          status,
           date,
           desc,
           image,
@@ -188,19 +210,39 @@ export default function Events() {
         </ScrollReveal>
 
         {/* Filters */}
-        <ScrollReveal delay={0.1} className="flex flex-wrap gap-4 mb-12">
-          {filters.map((filter) => (
-            <motion.button
-              key={filter}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-8 py-2 font-black uppercase text-sm border-2 border-primary transition-colors duration-200 cursor-pointer ${activeFilter === filter ? 'bg-primary text-white' : 'bg-transparent text-primary hover:bg-primary/10'
-                }`}
-            >
-              {filter}
-            </motion.button>
-          ))}
+        <ScrollReveal delay={0.1} className="flex flex-col gap-6 mb-12">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="font-black uppercase text-slate-400 text-sm tracking-widest mr-2">Status:</span>
+            {statusFilters.map((filter) => (
+              <motion.button
+                key={filter}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveStatus(filter)}
+                className={`px-6 py-1.5 font-black uppercase text-xs transition-all duration-200 cursor-pointer ${activeStatus === filter 
+                    ? 'bg-[#00B4D8] text-white shadow-[3px_3px_0px_0px_#03045E] border-2 border-[#03045E]' 
+                    : 'bg-white text-slate-500 border-2 border-slate-200 hover:border-[#00B4D8] hover:text-[#00B4D8] hover:shadow-[3px_3px_0px_0px_rgba(0,180,216,0.3)]'
+                  }`}
+              >
+                {filter}
+              </motion.button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="font-black uppercase text-slate-400 text-sm tracking-widest mr-2">Category:</span>
+            {categoryFilters.map((filter) => (
+              <motion.button
+                key={filter}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setActiveCategory(filter)}
+                className={`px-8 py-2 font-black uppercase text-sm border-2 border-primary transition-colors duration-200 cursor-pointer ${activeCategory === filter ? 'bg-primary text-white' : 'bg-transparent text-primary hover:bg-primary/10'
+                  }`}
+              >
+                {filter}
+              </motion.button>
+            ))}
+          </div>
         </ScrollReveal>
 
         {/* Timeline — single column, line + dots share left-5 axis */}

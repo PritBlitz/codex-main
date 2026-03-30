@@ -103,35 +103,21 @@ export default function Home() {
   useEffect(() => {
     const fetchUpdates = async () => {
       try {
-        // Fetch up to 3 latest events
-        const events = await client.fetch(`*[_type == "event"] | order(date desc)[0...3] {
+        const rawData = await client.fetch(`*[_type in ["event", "post"]] | order(date desc)[0...3] {
           _id,
-          "type": "event",
+          _type,
           title,
+          "slug": slug.current,
           desc,
           date,
-          image,
-          "cta": "RSVP NOW"
+          image
         }`);
         
-        let posts: any[] = [];
-        if (events.length < 3) { // If fewer than 3 events, fill with blogs
-          const remaining = 3 - events.length;
-          posts = await client.fetch(`*[_type == "post"] | order(date desc)[0...${remaining}] {
-            _id,
-            "type": "blog",
-            title,
-            "slug": slug.current,
-            desc,
-            date,
-            image,
-            "cta": "READ MORE"
-          }`);
-        }
-        
-        const combined = [...events, ...posts].map((item: any) => ({
+        const combined = rawData.map((item: any) => ({
           ...item,
-          image: item.image ? urlFor(item.image).url() : "https://via.placeholder.com/400x300?text=No+Image"
+          type: item._type === 'post' ? 'blog' : 'event',
+          cta: item._type === 'post' ? 'READ MORE' : 'RSVP NOW',
+          image: item.image ? urlFor(item.image).url() : "https://via.placeholder.com/600x400?text=No+Image"
         }));
         
         if (combined.length > 0) {

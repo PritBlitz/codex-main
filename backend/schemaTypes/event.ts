@@ -13,11 +13,25 @@ export default defineType({
       options: {
         list: [
           { title: 'Workshops', value: 'Workshops' },
-          { title: 'Competetions', value: 'Competetions' },
+          { title: 'Competitions', value: 'Competitions' },
           { title: 'Seminars', value: 'Seminars' },
         ],
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'status',
+      title: 'Event Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Upcoming', value: 'Upcoming' },
+          { title: 'Ongoing', value: 'Ongoing' },
+          { title: 'Past', value: 'Past' },
+        ],
+      },
+      validation: (Rule) => Rule.required(),
+      initialValue: 'Upcoming'
     }),
     defineField({ name: 'date', title: 'Date', type: 'datetime', validation: (Rule) => Rule.required() }),
     defineField({ name: 'desc', title: 'Description', type: 'text', validation: (Rule) => Rule.required() }),

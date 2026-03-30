@@ -3,6 +3,8 @@ import { motion, useInView } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { client } from "../../sanity/client";
+import { Instagram, Linkedin, Mail } from "lucide-react";
+import codex_light from "../../assets/code_light.png";
 
 export default function Footer() {
   const ref = useRef<HTMLElement>(null);
@@ -40,8 +42,8 @@ export default function Footer() {
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <div className="bg-primary p-1">
-                <span className="material-symbols-outlined text-white text-3xl">terminal</span>
+              <div className="p-1">
+                <img src={codex_light} alt="Codex Logo" className="h-10 w-9" />
               </div>
             </motion.div>
             <span className="text-3xl font-black tracking-tighter">CODEX ITER</span>
@@ -76,12 +78,12 @@ export default function Footer() {
           <motion.h5 variants={itemAnim} className="font-black text-xl mb-6 uppercase tracking-widest text-primary">Connect</motion.h5>
           <div className="flex gap-4">
             {[
-              { icon: "share", href: settings?.linkedin || "#" },
-              { icon: "alternate_email", href: settings?.email ? `mailto:${settings.email}` : "#" },
-              { icon: "camera", href: settings?.instagram || "#" },
-            ].map(({ icon, href }) => (
+              { icon: <Linkedin size={24} />, href: settings?.linkedin || "#", id: "linkedin" },
+              { icon: <Mail size={24} />, href: settings?.email ? `mailto:${settings.email}` : "#", id: "email" },
+              { icon: <Instagram size={24} />, href: settings?.instagram || "#", id: "instagram" },
+            ].map(({ icon, href, id }) => (
               <motion.a
-                key={icon}
+                key={id}
                 href={href}
                 variants={itemAnim}
                 whileHover={{ rotate: 15, scale: 1.15 }}
@@ -89,7 +91,7 @@ export default function Footer() {
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 className="bg-white text-slate-900 p-2 border-2 border-primary hover:bg-primary hover:text-white transition-colors flex cursor-pointer"
               >
-                <span className="material-symbols-outlined">{icon}</span>
+                {icon}
               </motion.a>
             ))}
           </div>

@@ -158,8 +158,8 @@ export const mockData = {
   },
   events: {
     hero: {
-      label: "Technical Series 2024",
-      titlePart1: "Upcoming",
+      label: "Technical Series",
+      titlePart1: "Core",
       titlePart2: "Iterations",
       description: "A sequence of technical events designed to bridge the gap between abstract theory and industrial application."
     },
