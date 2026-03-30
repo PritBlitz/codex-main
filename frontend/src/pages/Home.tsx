@@ -112,14 +112,14 @@ export default function Home() {
           date,
           image
         }`);
-        
+
         const combined = rawData.map((item: any) => ({
           ...item,
           type: item._type === 'post' ? 'blog' : 'event',
           cta: item._type === 'post' ? 'READ MORE' : 'RSVP NOW',
           image: item.image ? urlFor(item.image).url() : "https://via.placeholder.com/600x400?text=No+Image"
         }));
-        
+
         if (combined.length > 0) {
           setDynamicUpdates(combined);
         }
@@ -127,7 +127,7 @@ export default function Home() {
         console.error("Error fetching dynamic updates:", error);
       }
     };
-    
+
     fetchUpdates();
   }, []);
 
@@ -135,7 +135,7 @@ export default function Home() {
     <div>
       {/* ── HERO ────────────────────────────────────────────────── */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden border-b-4 border-slate-900 grid-pattern bg-background-light">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full py-20">
+        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full py-20">
           <div className="relative z-10">
             <motion.div
               initial={prefersReduced ? {} : { opacity: 0 }}
@@ -146,7 +146,7 @@ export default function Home() {
               {hero.established}
             </motion.div>
 
-            <h1 className="text-6xl md:text-8xl font-black leading-[0.9] text-slate-900 mb-6 font-display">
+            <p className="text-5xl md:text-[5.5rem] font-black leading-[0.9] text-slate-900 mb-6 font-display">
               <AnimatedHeading text={hero.title} />{" "}
               <br />
               <span className="text-primary italic">
@@ -154,10 +154,10 @@ export default function Home() {
               </span>{" "}
               <br />
               <AnimatedHeading text={hero.subtitle2} />
-            </h1>
+            </p>
 
             {/* Typing subheading */}
-            <p className="text-xl md:text-2xl font-medium text-slate-800 mb-10 max-w-lg border-l-4 border-primary pl-6 min-h-16">
+            <p className="text-xl md:text-xl font-medium text-slate-800 mb-10 max-w-lg border-l-4 border-primary pl-6 min-h-16">
               {displayed}
               {!done && (
                 <motion.span
@@ -301,7 +301,7 @@ export default function Home() {
           <StaggerContainer className="grid md:grid-cols-3 gap-10">
             {dynamicUpdates.map((item, i) => (
               <StaggerItem key={item._id || i}>
-                <Link 
+                <Link
                   to={item.type === 'blog' ? `/blogs/${item.slug}` : '/events'}
                   className="group h-full flex flex-col bg-white border-4 border-slate-900 brutalist-shadow-hover transition-all duration-300"
                 >

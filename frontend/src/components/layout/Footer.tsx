@@ -104,8 +104,7 @@ export default function Footer() {
         animate={inView ? { opacity: 1 } : {}}
         transition={{ duration: 0.5, delay: 0.6 }}
       >
-        <p>© 2024 CODEX ITER. ALL SYSTEMS OPERATIONAL.</p>
-        <p>DESIGNED FOR THE BOLD.</p>
+        <p className="text-sm text-center">© 2026 CODEX ITER. ALL RIGHTS RESERVED.</p>
       </motion.div>
     </footer>
   );

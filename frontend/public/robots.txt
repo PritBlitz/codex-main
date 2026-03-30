@@ -1,0 +1,6 @@
+# Robots (search engine crawlers)
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://codex-iter.in/sitemap.xml
