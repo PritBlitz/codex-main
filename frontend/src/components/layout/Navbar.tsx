@@ -95,6 +95,7 @@ export default function Navbar() {
           })}
 
           <motion.button
+            onClick={() => window.open("https://whatsapp.com/channel/0029Vb7SavAElagvuWq2i10a", "_blank")}
             initial={prefersReduced ? {} : { opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.55 }}
@@ -138,7 +139,10 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <button className="bg-primary text-white px-6 py-3 font-bold brutalist-shadow border-2 border-slate-900 transition-all hover:bg-white hover:text-slate-900 w-full mt-2 cursor-pointer">
+              <button
+                onClick={() => window.open("https://whatsapp.com/channel/0029Vb7SavAElagvuWq2i10a", "_blank")}
+                className="bg-primary text-white px-6 py-3 font-bold brutalist-shadow border-2 border-slate-900 transition-all hover:bg-white hover:text-slate-900 w-full mt-2 cursor-pointer"
+              >
                 Join
               </button>
             </div>

@@ -4,12 +4,12 @@ export const mockData = {
       established: "Est. 2016",
       title: "CODEX ITER:",
       subtitle1: "A DECADE",
-      subtitle2: "OF CULTURE.",
+      subtitle2: "OF CULTURE",
       description: "Built by developers. Driven by excellence. Fostering a legacy of technical mastery.",
       exploreBtn: "EXPLORE LEGACY",
       stackBtn: "OUR STACK",
       loadingText: "[CODEX_INITIALIZING...]",
-      codeFrag1: "const iter = true;",
+      codeFrag1: "const codex = true;",
       codeFrag2: "while(alive) { code(); }"
     },
     about: {
@@ -19,7 +19,7 @@ export const mockData = {
       desc1: "Founded at the intersection of curiosity and ambition, CODEX ITER has evolved from a small circle of enthusiasts into a powerhouse of technical innovation.",
       desc2: "We don't just teach syntax; we build ecosystems. Our culture is rooted in peer-to-peer learning, where senior architects mentor first-year dreamers, creating a cycle of continuous improvement.",
       stats: [
-        { value: "500+", label: "Alumni Leaders", span: 1 },
+        { value: "200+", label: "Alumni Leaders", span: 1 },
         { value: "150+", label: "Hackathons Won", span: 1 },
         { value: "1,000,000+", label: "Lines of Open Source Code", span: 2 }
       ]
