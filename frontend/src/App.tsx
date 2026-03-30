@@ -14,6 +14,7 @@ import AmbientBackground from "./components/animations/AmbientBackground"
 
 // Inner component so useLocation works inside Router
 function AnimatedRoutes() {
+
   const location = useLocation()
   return (
     <>
