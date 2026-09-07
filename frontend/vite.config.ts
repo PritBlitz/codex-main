@@ -9,8 +9,6 @@ export default defineConfig({
     sitemap({
       hostname: 'https://codex-iter.in',
       dynamicRoutes: [
-        '/',
-        '/about',
         '/blogs',
         '/events',
         '/team'
