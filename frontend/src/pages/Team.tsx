@@ -116,12 +116,25 @@ export default function Team() {
   const [dynamicMembers, setDynamicMembers] = useState<any[]>(members);
   const [activeFilter, setActiveFilter] = useState('All');
 
-  const filters = ['All', 'Coordinator', 'Member', 'Team Leader', 'Core Member', 'Alumni'];
+  const filters = ['All', 'Coordinator', 'Team Leader', 'Core Member', 'Alumni', 'Member'];
 
-  const filteredMembers = activeFilter === 'All'
+  const roleOrder: Record<string, number> = {
+  Coordinator: 1,
+  "Team Leader": 2,
+  "Core Member": 3,
+  Alumni: 4,
+  Member: 5,
+};
+
+  const filteredMembers =
+  (activeFilter === 'All'
     ? dynamicMembers
-    : dynamicMembers.filter(m => m.department === activeFilter);
-
+    : dynamicMembers.filter(m => m.department === activeFilter)
+  ).sort(
+    (a, b) =>
+      (roleOrder[a.department] || 99) -
+      (roleOrder[b.department] || 99)
+  );
   useEffect(() => {
     const fetchTeam = async () => {
       try {
