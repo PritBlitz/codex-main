@@ -44,6 +44,25 @@ export default function Navbar() {
       }}
       className={`sticky top-0 z-50 border-b-4 border-slate-900 px-6 py-4 ${scrolled ? "" : "bg-white"}`}
     >
+      <motion.a
+        href="https://codexstart.codex-iter.in"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="We are hiring right now at CodexStart"
+        initial={prefersReduced ? {} : { opacity: 0, x: -18, rotate: -4 }}
+        animate={prefersReduced ? { opacity: 1 } : { opacity: 1, x: 0, rotate: [-4, -2, -4] }}
+        transition={prefersReduced ? { duration: 0.2 } : { duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+        className="hidden lg:flex absolute left-5 top-[72px] items-center"
+      >
+        <span className="relative z-10 inline-flex items-center gap-2 border-4 border-slate-900 bg-slate-900 px-2.5 py-1.5 text-white shadow-[5px_5px_0_0_#facc15] translate-y-[70px]">
+          <span className="absolute -top-2 left-1/2 -translate-x-1/2 h-3 w-3 rounded-full border-2 border-slate-900 bg-yellow-300" />
+          <span className="text-[9px] font-black uppercase tracking-[0.28em] text-yellow-300">Click Here</span>
+          <span className="h-6 w-px bg-white/40" />
+          <span className="text-[10px] font-black uppercase tracking-[0.18em]">We are Hiring</span>
+          <span className="text-base font-black text-yellow-300">→</span>
+        </span>
+      </motion.a>
+
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <div className="p-1">

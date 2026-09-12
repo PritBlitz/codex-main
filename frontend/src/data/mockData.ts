@@ -2,6 +2,8 @@ export const mockData = {
   home: {
     hero: {
       established: "Est. 2016",
+      hiringText: "WE ARE HIRING RIGHT NOW",
+      hiringLink: "https://codexstart.codex-iter.in",
       title: "CODEX ITER:",
       subtitle1: "A DECADE",
       subtitle2: "OF CULTURE",
