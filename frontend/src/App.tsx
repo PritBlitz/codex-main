@@ -11,6 +11,9 @@ import TransitionOverlay from "./components/animations/TransitionOverlay"
 import PageTransition from "./components/animations/PageTransition"
 import CustomCursor from "./components/animations/CustomCursor"
 import AmbientBackground from "./components/animations/AmbientBackground"
+import { CustomScrollbar } from "./components/ui/CustomScrollbar"
+
+import Projects from "./pages/Projects"
 
 // Inner component so useLocation works inside Router
 function AnimatedRoutes() {
@@ -24,6 +27,7 @@ function AnimatedRoutes() {
           <Route path="/" element={<PageTransition><Home /></PageTransition>} />
           <Route path="/blogs" element={<PageTransition><Blogs /></PageTransition>} />
           <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+          <Route path="/projects" element={<PageTransition><Projects /></PageTransition>} />
           <Route path="/team" element={<PageTransition><Team /></PageTransition>} />
           <Route path="/blogs/:slug" element={<PageTransition><BlogDetail /></PageTransition>} />
         </Routes>
@@ -38,6 +42,7 @@ function App() {
       {/* Global ambient elements */}
       <AmbientBackground />
       <CustomCursor />
+      <CustomScrollbar />
       <div className="flex flex-col min-h-screen relative z-10">
         <Navbar />
         <main className="grow">
