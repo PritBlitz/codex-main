@@ -113,7 +113,8 @@ function TeamCard({ member }: { member: any }) {
 
 export default function Team() {
   const { hero, members } = mockData.team;
-  const [dynamicMembers, setDynamicMembers] = useState<any[]>(members);
+  const [dynamicMembers, setDynamicMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
 
   const filters = ['All', 'Coordinator', 'Team Leader', 'Core Member', 'Alumni', 'Member'];
@@ -155,9 +156,14 @@ export default function Team() {
             image: m.image ? urlFor(m.image).url() : "https://via.placeholder.com/300x300?text=No+Avatar"
           }));
           setDynamicMembers(formattedMembers);
+        } else {
+          setDynamicMembers(members);
         }
       } catch (error) {
         console.error("Error fetching team:", error);
+        setDynamicMembers(members);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -204,15 +210,22 @@ export default function Team() {
         </ScrollReveal>
 
         {/* 3D Card Grid */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredMembers.map((member) => (
-            <StaggerItem key={member._id || member.id}>
-              <div className="group relative">
-                <TeamCard member={member} />
-              </div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        {loading ? (
+          <div className="border-4 border-slate-900 bg-white p-12 text-center brutalist-shadow my-8">
+            <div className="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
+            <h3 className="text-xl font-black text-slate-900 uppercase">Loading Team...</h3>
+          </div>
+        ) : (
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {filteredMembers.map((member) => (
+              <StaggerItem key={member._id || member.id}>
+                <div className="group relative">
+                  <TeamCard member={member} />
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        )}
 
 
       </main>
