@@ -11,7 +11,8 @@ const CATEGORIES = ["All", "Web Development", "Artificial Intelligence", "Machin
 
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [dynamicProjects, setDynamicProjects] = useState<Project[]>(MOCK_PROJECTS);
+  const [dynamicProjects, setDynamicProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -47,9 +48,14 @@ export default function Projects() {
             featured: p.featured,
           }));
           setDynamicProjects(formattedProjects);
+        } else {
+          setDynamicProjects(MOCK_PROJECTS);
         }
       } catch (error) {
         console.error("Error fetching projects from Sanity:", error);
+        setDynamicProjects(MOCK_PROJECTS);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -103,15 +109,22 @@ export default function Projects() {
           </ScrollReveal>
 
           {/* Projects Grid */}
-          <StaggerContainer key={activeCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <StaggerItem key={project.id}>
-                <ProjectCard project={project} />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          {loading ? (
+            <div className="border-4 border-slate-900 bg-white p-12 text-center brutalist-shadow my-8">
+              <div className="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
+              <h3 className="text-xl font-black text-slate-900 uppercase">Loading Projects...</h3>
+            </div>
+          ) : (
+            <StaggerContainer key={activeCategory} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredProjects.map((project) => (
+                <StaggerItem key={project.id}>
+                  <ProjectCard project={project} />
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
           
-          {filteredProjects.length === 0 && (
+          {!loading && filteredProjects.length === 0 && (
             <div className="border-4 border-slate-900 bg-white p-12 text-center brutalist-shadow mt-8">
               <h3 className="text-2xl font-black text-slate-900 mb-2 uppercase">No Projects Found</h3>
               <p className="text-slate-600 font-medium font-mono text-sm">
