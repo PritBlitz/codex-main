@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/blogs", label: "Blogs" },
   { to: "/events", label: "Events" },
+  { to: "/projects", label: "Projects" },
   { to: "/team", label: "Team" },
 ];
 
