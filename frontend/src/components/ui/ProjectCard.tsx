@@ -85,7 +85,7 @@ export function ProjectCard({ project }: { project: Project }) {
             ))}
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-0  pointer-events-none z-10" />
       </div>
 
       {/* Card Front Content */}
